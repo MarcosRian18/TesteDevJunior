@@ -1,0 +1,56 @@
+// styles/header.scss
+.header {
+  display: flex;
+  flex-direction: column; // Muda para coluna para responsividade
+  align-items: center; // Centraliza os itens
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #ddd;
+
+  .logo {
+    img {
+      height: 40px; // Diminui a altura da imagem
+    }
+  }
+
+  .welcome-message {
+    text-align: center;
+
+    h1 {
+      font-size: 1.2rem; // Diminui o tamanho da fonte
+      margin: 10px 0; // Ajusta margens
+      color: #333;
+    }
+  }
+
+  .date-time {
+    font-size: 0.9rem; // Diminui o tamanho da fonte
+    color: #555;
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+// Media Query para telas menores
+@media (min-width: 768px) {
+  .header {
+    flex-direction: row; // Retorna para linha em telas maiores
+    justify-content: space-between;
+
+    .welcome-message {
+      h1 {
+        font-size: 1.5rem; // Restaura o tamanho da fonte em telas grandes
+      }
+    }
+
+    .logo img {
+      height: 50px; // Restaura a altura da imagem em telas grandes
+    }
+
+    .date-time {
+      font-size: 1rem; // Restaura o tamanho da fonte em telas grandes
+    }
+  }
+}

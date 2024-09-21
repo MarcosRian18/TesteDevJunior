@@ -1,95 +1,158 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+
+import React, { useState } from 'react';
+import './styles/tasks.scss';
+import Header from './components/Header';
+
+type Task = {
+  id: number;
+  name: string;
+  completed: boolean;
+};
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [tasks, setTasks] = useState<Task[]>([
+    { id: 1, name: 'Comprar pão', completed: false },
+    { id: 2, name: 'Estudar programação', completed: false },
+  ]);
+  const [newTask, setNewTask] = useState('');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+  const handleComplete = (id: number) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
+  const openAddModal = () => setIsAddModalOpen(true);
+  const closeAddModal = () => setIsAddModalOpen(false);
+
+  const addTask = () => {
+    if (newTask.trim()) {
+      const newId = tasks.length ? tasks[tasks.length - 1].id + 1 : 1;
+      setTasks([...tasks, { id: newId, name: newTask, completed: false }]);
+      setNewTask('');
+      closeAddModal();
+    }
+  };
+
+  const openDeleteModal = (id: number) => {
+    setTaskToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setTaskToDelete(null);
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDelete = () => {
+    if (taskToDelete !== null) {
+      setTasks((prev) => prev.filter((task) => task.id !== taskToDelete));
+      closeDeleteModal();
+    }
+  };
+
+  return (
+    
+      <div className="task-page">
+        <Header />
+        <div className={`task-container ${isAddModalOpen || isDeleteModalOpen ? 'blur-background' : ''}`}>
+          <div className="task-message">
+            <h1>Minhas Tarefas</h1>
+            <p>Abaixo estão as tarefas a serem realizadas:</p>
+    
+            <div className="add-task">
+              <button onClick={openAddModal}>Nova Tarefa</button>
+            </div>
+          </div>
+    
+          <div className="task-list">
+            {tasks.filter((task) => !task.completed).length === 0 ? (
+              <p className="no-tasks">Você não tem tarefas pendentes!</p>
+            ) : (
+              tasks
+                .filter((task) => !task.completed)
+                .map((task) => (
+                  <div key={task.id} className="task">
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      onChange={() => handleComplete(task.id)}
+                    />
+                    <span>{task.name}</span>
+                    <button
+                      onClick={() => openDeleteModal(task.id)}
+                      className="delete-button"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                ))
+            )}
+          </div>
+    
+          <h2 className='tarefasFinalizadas'>Tarefas Finalizadas</h2>
+          <div className="completed-tasks">
+            {tasks.filter((task) => task.completed).length === 0 ? (
+              <p className="no-tasks">Nenhuma tarefa finalizada.</p>
+            ) : (
+              tasks
+                .filter((task) => task.completed)
+                .map((task) => (
+                  <div key={task.id} className="task completed">
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      onChange={() => handleComplete(task.id)}
+                    />
+                    <span>{task.name}</span>
+                    <button
+                      onClick={() => openDeleteModal(task.id)}
+                      className="delete-button"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                ))
+            )}
+          </div>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    
+        {isAddModalOpen && (
+          <div className="modal-overlay" onClick={closeAddModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>Nova Tarefa</h3>
+              <input
+                type="text"
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)}
+                placeholder="Digite o nome da tarefa"
+              />
+              <div className="modal-actions">
+                <button className='salvar' onClick={addTask}>Salvar</button>
+                <button className='cancelar' onClick={closeAddModal}>Cancelar</button>
+              </div>
+            </div>
+          </div>
+        )}
+    
+        {isDeleteModalOpen && (
+          <div className="modal-overlay" onClick={closeDeleteModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>Deletar Tarefa</h3>
+              <p>Tem certeza que deseja deletar essa tarefa?</p>
+              <div className="modal-actions">
+                <button className='deletar' onClick={handleDelete}>Deletar</button>
+                <button className='cancelar' onClick={closeDeleteModal}>Cancelar</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
 }
